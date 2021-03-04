@@ -77,6 +77,8 @@ class TestDefaultSuite(unittest.TestCase):
   def test_austria(self):
     self.driver.get("https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html")
     self.vars["tests_cumulative"] = self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(6) > td:nth-child(11)").text
+    self.vars["pcr_tests_cum"] = self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(7) > td:nth-child(11)").text
+    self.vars["rapid_test_cum"] = self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(6) > td:nth-child(11)").text
     self.driver.close()
 
   def test_azerbaijan(self):
@@ -170,6 +172,14 @@ class TestDefaultSuite(unittest.TestCase):
     self.driver.find_element(By.XPATH, "//*[@id=\"KPI-01\"]")
     time.sleep(30)
     self.vars["tests_cumulative"] = self.driver.find_element(By.XPATH, "//*[@id=\"KPI-01\"]").text.split('\n')[1]
+    time.sleep(30)
+    self.driver.find_element(By.XPATH, "//*[@id=\"KPI-02\"]")
+    time.sleep(30)
+    self.vars["pcr_tests_cum"] = self.driver.find_element(By.XPATH, "//*[@id=\"KPI-02\"]").text.split('\n')[1]
+    time.sleep(30)
+    self.driver.find_element(By.XPATH, "//*[@id=\"KPI-03\"]")
+    time.sleep(30)
+    self.vars["rapid_test_cum"] = self.driver.find_element(By.XPATH, "//*[@id=\"KPI-03\"]").text.split('\n')[1]
     
   def test_brunei(self):
     self.driver.maximize_window()
@@ -647,6 +657,8 @@ class TestDefaultSuite(unittest.TestCase):
   def test_switzerland(self):
     self.driver.get("https://www.covid19.admin.ch/en/overview?ovTime=total")
     self.vars["tests_cumulative"] = self.driver.find_element(By.CSS_SELECTOR, ".bag-key-value-list__combine-below:nth-child(2) .bag-key-value-list__entry-value").text
+    self.vars["pcr_tests_cum"] = self.driver.find_element(By.CSS_SELECTOR, "bag-card-overview-test .bag-key-value-list__combine-above:nth-child(3) .bag-key-value-list__entry-value").text
+    self.vars["rapid_test_cum"] = self.driver.find_element(By.CSS_SELECTOR, "bag-card-overview-test .bag-key-value-list__combine-above:nth-child(4) .bag-key-value-list__entry-value").text
     self.driver.close()
 
   def test_taiwan(self):
