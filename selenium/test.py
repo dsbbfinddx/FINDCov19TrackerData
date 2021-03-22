@@ -140,6 +140,14 @@ class TestDefaultSuite(unittest.TestCase):
     self.vars["tests_cumulative"] = self.vars["tests_cumulative"].split('outbreak situation\n')[1].split('\nTests Completed')[0]
     self.driver.close()    
 
+  def test_benin(self):
+    self.driver.get("https://www.gouv.bj/coronavirus/")
+    self.vars["pcr_tests_cum"] = self.driver.find_element(By.CSS_SELECTOR, ".left-5:nth-child(1) .h1").text
+    self.vars["rapid_test_cum"] = self.driver.find_element(By.CSS_SELECTOR, ".left-5:nth-child(2) .h1").text
+    self.vars["tests_cumulative"] = int(self.vars["pcr_tests_cum"])+int(self.vars["rapid_test_cum"])
+    print(self.vars)
+    self.driver.close()
+
   def test_bermuda(self):
     self.driver.get("https://www.gov.bm/coronavirus-covid19-update")
     WebDriverWait(self.driver, 30).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "tr:nth-child(2) > td:nth-child(2)")))
@@ -180,6 +188,7 @@ class TestDefaultSuite(unittest.TestCase):
     self.driver.find_element(By.XPATH, "//*[@id=\"KPI-03\"]")
     time.sleep(30)
     self.vars["rapid_test_cum"] = self.driver.find_element(By.XPATH, "//*[@id=\"KPI-03\"]").text.split('\n')[1]
+    print(self.vars)
     
   def test_brunei(self):
     self.driver.maximize_window()
@@ -210,7 +219,10 @@ class TestDefaultSuite(unittest.TestCase):
   def test_czechia(self):
     self.driver.get("https://onemocneni-aktualne.mzcr.cz/covid-19")
     WebDriverWait(self.driver, 40).until(expected_conditions.visibility_of_element_located((By.ID, "count-test")))
-    self.vars["tests_cumulative"] = self.driver.find_element(By.ID, "count-test").text
+    self.vars["pcr_tests_cum"] = self.driver.find_element(By.ID, "count-test").text.replace(" ","")
+    self.vars["rapid_test_cum"] = self.driver.find_element(By.XPATH, "//div[2]/div/p[2]").text.split("\n")[0].replace(" ","")
+    self.vars["tests_cumulative"] = int(self.vars["pcr_tests_cum"]) + int(self.vars["rapid_test_cum"])
+    print(self.vars)
     self.driver.close()
 
   def test_chile(self):
@@ -239,12 +251,11 @@ class TestDefaultSuite(unittest.TestCase):
     #self.driver.close()
 
   def test_denmark(self):
-    self.driver.get("https://www.sst.dk/en/english/corona-eng/status-of-the-epidemic/covid-19-updates-statistics-and-charts")
-    time.sleep(30)
-    try:
-        self.vars["tests_cumulative"] = self.driver.find_element(By.CSS_SELECTOR, ".table-responsive:nth-child(8) tr:nth-child(2) > td:nth-child(2) > span").text
-    except NoSuchElementException:
-        self.vars["tests_cumulative"] = self.driver.find_element(By.CSS_SELECTOR, ".table-responsive:nth-child(7) tr:nth-child(2) > td:nth-child(2) > span").text
+    self.driver.get("https://www.sst.dk/da/corona/Status-for-epidemien/tal-og-overvaagning")
+    #self.vars["pcr_tests_cum"] = self.driver.find_element(By.XPATH, "//*[@id=\"main__content\"]/main/article/div[3]/div/div[1]/div[2]/table/tbody/tr[2]/td[2]/p[3]/span/text()[1]")
+    #self.vars["rapid_test_cum"] = self.driver.find_element(By.XPATH, "//*[@id=\"main__content\"]/main/article/div[3]/div/div[1]/div[2]/table/tbody/tr[2]/td[2]/p[3]/span/text()[2]")
+    self.vars["tests_cumulative"] = self.driver.find_element(By.XPATH, "//*[@id=\"main__content\"]/main/article/div[3]/div/div[1]/div[2]/table/tbody/tr[2]/td[2]/p[3]/span").text
+    print(self.vars)
     self.driver.close()
 
   def test_ecuador(self):
@@ -536,7 +547,16 @@ class TestDefaultSuite(unittest.TestCase):
     self.driver.get("https://covid19.info.gov.pg/")
     self.vars["tests_cumulative"] = self.driver.find_element(By.XPATH, "//article[@id=\'post-166\']/div/div/div/section[4]/div[2]/div/div[2]/div/div/section/div/div/div[2]/div/div/div/div/div/table/tbody/tr[11]/td[2]/p/span/span").text
     self.driver.close()
-    
+  
+  def test_peru(self):
+    self.driver.get("https://app.powerbi.com/view?r=eyJrIjoiOGU4MGE1NzItNmY1OC00ZTc2LThlYTItNWY2MzJhZjU5ZTM2IiwidCI6IjM0MGJjMDE2LWM2YTYtNDI2Ni05NGVjLWE3NDY0YmY5ZWM3MCIsImMiOjR9")
+    time.sleep(10)
+    self.vars["pcr_tests_cum"] = self.driver.find_element(By.XPATH, "//*[@id=\"pvExplorationHost\"]//div").text.split("\n")[40].replace(",","")
+    self.vars["rapid_test_cum"] = self.driver.find_element(By.XPATH, "//*[@id=\"pvExplorationHost\"]//div").text.split("\n")[60].replace(",","")
+    self.vars["tests_cumulative"] = int(self.vars["pcr_tests_cum"]) + int(self.vars["rapid_test_cum"])
+    print(self.vars)
+    self.driver.close()    
+
   def test_portugal(self):
     self.driver.set_page_load_timeout(60)
     self.driver.get("https://esriportugal.maps.arcgis.com/apps/opsdashboard/index.html#/acf023da9a0b4f9dbb2332c13f635829")
@@ -564,8 +584,11 @@ class TestDefaultSuite(unittest.TestCase):
     self.driver.get("https://stirioficiale.ro/informatii")
     url = self.driver.find_element(By.XPATH, "//a[contains(text(),\'BULETIN DE PRESĂ\')]").get_attribute('href')
     self.driver.get(url)
-    self.vars["tests_cumulative"] = self.driver.find_element(By.XPATH, "//p[contains(text(), \"Până la această dată, la nivel național, au fost prelucrate\")]").text
-    self.vars["tests_cumulative"] = self.vars["tests_cumulative"].split('Până la această dată, la nivel național, au fost prelucrate')[1].split('de teste')[0]
+    all_tests = self.driver.find_element(By.XPATH, "//p[contains(text(), \"Până la această dată, la nivel național, au fost prelucrate\")]").text
+    self.vars["pcr_tests_cum"] = all_tests.split('Până la această dată, la nivel național, au fost prelucrate')[1].split('de teste')[0].replace(".","").replace(" ","")
+    self.vars["rapid_test_cum"] = all_tests.split('Până la această dată, la nivel național, au fost prelucrate')[1].split('de teste RT-PCR și')[1].split('de teste')[0].replace(".","").replace(" ","")
+    self.vars["tests_cumulative"] = int(self.vars["pcr_tests_cum"]) + int(self.vars["rapid_test_cum"])
+    print(self.vars)
     self.driver.close()
 
   # def test_russia(self):
@@ -626,14 +649,22 @@ class TestDefaultSuite(unittest.TestCase):
   def test_slovakia(self):
     self.driver.get("https://korona.gov.sk/")
     WebDriverWait(self.driver, 90).until(expected_conditions.visibility_of_element_located((By.CSS_SELECTOR, "#block_603780b691b98 > div > p")))
-    self.vars["tests_cumulative"] = self.driver.find_element(By.CSS_SELECTOR, "#block_603780b691b98 > div > p").text
+    pcr_test = self.driver.find_element(By.CSS_SELECTOR, "#block_603780b691b98 > div > p").text
+    self.vars["pcr_tests_cum"] = pcr_test.split(":")[1].replace(" ","")
+    rapid_test = self.driver.find_element(By.CSS_SELECTOR, "#block_60378ba2c4f83 > div > p").text
+    self.vars["rapid_test_cum"] = rapid_test.split(":")[1].replace(" ","")
+    self.vars["tests_cumulative"] = int(self.vars["pcr_tests_cum"]) + int(self.vars["rapid_test_cum"])
+    print(self.vars)
     self.driver.close()
 
   def test_slovenia(self):
     self.driver.get("https://www.nijz.si/sl/dnevno-spremljanje-okuzb-s-sars-cov-2-covid-19")
     time.sleep(5)
-    self.vars["tests_cumulative"] = self.driver.find_element(By.XPATH, "//tbody").text
-    self.vars["tests_cumulative"] = self.vars["tests_cumulative"].split('testiranih oseb s PCR')[0].split('\n')[-2]
+    all_test = self.driver.find_element(By.XPATH, "//tbody").text
+    self.vars["pcr_tests_cum"] = all_test.split('testiranih oseb s PCR')[0].split('\n')[-2].replace(".","")
+    self.vars["rapid_test_cum"] = all_test.split('testiranih oseb s HAGT')[0].split('\n')[-2].replace(".","")
+    self.vars["tests_cumulative"] = int(self.vars["pcr_tests_cum"]) + int(self.vars["rapid_test_cum"])
+    print(self.vars)
     self.driver.close()
 
   def test_spain(self):
@@ -642,8 +673,11 @@ class TestDefaultSuite(unittest.TestCase):
     url = self.driver.find_element(By.XPATH, "//*[contains(text(), \"España ha realizado más de\")]/parent::p/a").get_attribute('href')
     self.driver.get(url)
     WebDriverWait(self.driver, 30).until(expected_conditions.visibility_of_element_located((By.XPATH, "//h2")))
-    self.vars["tests_cumulative"] = self.driver.find_element(By.XPATH, "//section//div[3]//p[1]").text
-    self.vars["tests_cumulative"] = self.vars["tests_cumulative"].split('cabo un total de')[-1].strip().split(' ')[0].strip()
+    all_tests = self.driver.find_element(By.XPATH, "//section//div[3]//p[1]").text
+    self.vars["tests_cumulative"] = all_tests.split('cabo un total de')[-1].strip().split(' ')[0].strip().replace(".","")
+    self.vars["pcr_tests_cum"] = all_tests.split('De éstas,')[1].split("son PCR")[0].replace(".","")
+    self.vars["rapid_test_cum"] = all_tests.split('son PCR y ')[1].split("son test de")[0].replace(".","")
+    print(self.vars)
     self.driver.close()
 
   def test_sriLanka(self):
@@ -815,47 +849,6 @@ class TestDefaultSuite(unittest.TestCase):
               break
               
       print(self.vars)
-
-  def test_benin(self):
-    self.driver.get("https://africacdc.maps.arcgis.com/apps/opsdashboard/index.html#/9d8d4add4dcb456997fd83607b5d0c7c")
-    continent = WebDriverWait(self.driver, 40).until(expected_conditions.presence_of_element_located((By.ID, "Dashboard_1day_Sht1_5411_layer")))
-    all_countries = self.driver.find_elements_by_tag_name('circle')
-    final_tests = ""
-    for country in all_countries:
-        try:
-            country.click()
-            temp_name = self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(1) > td:nth-child(2)").text
-            if temp_name == 'Benin':
-                final_tests = self.driver.find_element(By.CSS_SELECTOR, "tr:nth-child(8) .esriNumericValue").text
-                break
-            else:
-                self.driver.find_element_by_id('esri.Map_0_gc').click()
-        except:
-            pass
-
-    self.vars["tests_cumulative"] = final_tests
-    self.driver.close()
-    self.driver.quit()
-    # When dahsboard doesn't have country names, the json from the arcgis API is used
-    if self.vars["tests_cumulative"]=="":
-      url_coord = "https://services8.arcgis.com/vWozsma9VzGndzx7/ArcGIS/rest/services/NEW_Dashboard/FeatureServer/0/query?where=0%3D0&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=Country%2C&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token="
-      r_coord = requests.get(url_coord)
-      cont_coord = json.loads(r_coord.content)
-      
-      for idx in cont_coord['features']:
-         if idx['attributes']['Country'] == 'Benin':
-             x_coord = idx['geometry']['x']
-             y_coord = idx['geometry']['y']
-             break
-      
-      url_tests = "https://services8.arcgis.com/vWozsma9VzGndzx7/ArcGIS/rest/services/Dashboard_1day_Sht1/FeatureServer/0/query?where=0%3D0&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=Country%2C+Tests&returnGeometry=true&featureEncoding=esriDefault&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnUniqueIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnQueryGeometry=false&returnDistinctValues=false&cacheHint=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token="
-      r_tests = requests.get(url_tests)
-      cont_tests = json.loads(r_tests.content)
-      
-      for idx in cont_tests['features']:
-          if idx['geometry']['x'] == x_coord and idx['geometry']['y'] == y_coord:
-              self.vars["tests_cumulative"] = idx['attributes']['Tests']
-              break
 
   def test_botswana(self):
     self.driver.get("https://africacdc.maps.arcgis.com/apps/opsdashboard/index.html#/9d8d4add4dcb456997fd83607b5d0c7c")
